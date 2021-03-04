@@ -8,7 +8,8 @@ namespace MessageReceiver.Entities
     public class SenderEntity : BaseEntity
     {
         public string IpAddress { get; set; }
+        public int Port { get; set; }
 
-        public virtual IList<SenderEntity> Messages { get; set; }
+        // public virtual IList<SenderEntity> Messages { get; set; }
     }
 }

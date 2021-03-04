@@ -14,12 +14,21 @@ namespace MessageReceiver.Contexts
         {
         }
 
-        //public DbSet<SenderEntity> Senders { get; set; }
+        public DbSet<SenderEntity> Senders { get; set; }
         //public DbSet<MessageEntity> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<SenderEntity>().ToTable("Senders");
+            // NB: in SQLite all string types are mapped to TEXT type
+            // https://www.sqlite.org/datatype3.html
+
+            modelBuilder.Entity<SenderEntity>()
+                .ToTable("Senders")
+                .HasKey(x => x.Id);
+            modelBuilder.Entity<SenderEntity>()
+                .Property(x => x.Id)
+                .HasColumnType("nvarchar(50)");
+
             //modelBuilder.Entity<MessageEntity>().ToTable("Messages");
         }
     }

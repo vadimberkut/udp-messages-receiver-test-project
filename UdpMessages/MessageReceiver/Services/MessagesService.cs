@@ -1,4 +1,6 @@
-﻿using MessageReceiver.Contexts;
+﻿using LinqKit;
+using MessageReceiver.Contexts;
+using MessageReceiver.Dtos;
 using MessageReceiver.Entities;
 using MessageReceiver.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -20,9 +22,12 @@ namespace MessageReceiver.Services
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<MessageEntity>> GetMessageAsync(string ipAddress, DateTimeOffset from, DateTimeOffset to)
+        public async Task<IEnumerable<MessageDto>> GetMessagesAsync(string ipAddress, DateTimeOffset? from, DateTimeOffset? to, int? offset, int? limit)
         {
-            _dbContext.Messages
+            offset = offset ?? 0;
+            limit = limit ?? 100;
+
+            var query = _dbContext.Messages
                 .Join(
                     _dbContext.Senders,
                     message => message.SenderId,
@@ -32,13 +37,34 @@ namespace MessageReceiver.Services
                         Message = message,
                         Sender = sender,
                     }
-                 )
-                .Where(x => x.Sender.IpAddress == ipAddress && )
+                 );
 
-            throw new NotImplementedException();
+            if(!string.IsNullOrEmpty(ipAddress))
+            {
+                query = query.Where(x => x.Sender.IpAddress == ipAddress);
+            }
+
+            if (from != null && to != null)
+            {
+                query = query.Where(x => x.Sender.IpAddress == ipAddress);
+            }
+
+            var queryResult = await query
+                .Skip(offset.Value)
+                .Take(limit.Value)
+                .ToListAsync();
+            
+            var result = queryResult.Select(x => new MessageDto()
+            {
+                Id = x.Message.Id,
+                Message = x.Message.Message,
+                SenderIp = x.Sender.IpAddress,
+                SenderPort = x.Sender.Port,
+            });
+            return result;
         }
 
-        public async Task<MessageEntity> SaveMessageAsync(string ipAddress, int port, string message)
+        public async Task SaveMessageAsync(string ipAddress, int port, string message)
         {
             // find or create sender
             var senderEntity = await _dbContext.Senders.FirstOrDefaultAsync(x => x.IpAddress == ipAddress && x.Port == port);
@@ -64,8 +90,6 @@ namespace MessageReceiver.Services
             _dbContext.Messages.Add(entity);
 
             await _dbContext.SaveChangesAsync();
-
-            return entity;
         }
     }
 }

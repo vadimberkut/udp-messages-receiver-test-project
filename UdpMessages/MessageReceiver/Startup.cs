@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UdpMessages.Shared.Config;
 
 namespace MessageReceiver
 {
@@ -48,7 +49,12 @@ namespace MessageReceiver
 
             services.AddTransient<IMessagesService, MessagesService>();
 
-            services.AddControllers();
+            services
+                .AddControllers()
+                .AddNewtonsoftJson(options =>
+                {
+                    SerializationConfig.GetDefaultJsonSerializerSettings(options.SerializerSettings);
+                });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MessageReceiver", Version = "v1" });

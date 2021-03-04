@@ -28,6 +28,7 @@ namespace MessageReceiver.Services
             limit = limit ?? 100;
 
             var query = _dbContext.Messages
+                .OrderByDescending(x => x.CreatedAt) // NB: SQLite can't order by DateTimeOffset if it's stored as TEXT
                 .Join(
                     _dbContext.Senders,
                     message => message.SenderId,
@@ -39,25 +40,26 @@ namespace MessageReceiver.Services
                     }
                  );
 
-            if(!string.IsNullOrEmpty(ipAddress))
+            if (!string.IsNullOrEmpty(ipAddress))
             {
                 query = query.Where(x => x.Sender.IpAddress == ipAddress);
             }
 
             if (from != null && to != null)
             {
-                query = query.Where(x => x.Sender.IpAddress == ipAddress);
+                query = query.Where(x => x.Message.CreatedAt >= from.Value.ToUniversalTime() && x.Message.CreatedAt < to.Value.ToUniversalTime());
             }
 
             var queryResult = await query
                 .Skip(offset.Value)
                 .Take(limit.Value)
                 .ToListAsync();
-            
+
             var result = queryResult.Select(x => new MessageDto()
             {
                 Id = x.Message.Id,
                 Message = x.Message.Message,
+                CreatedAt = x.Message.CreatedAt,
                 SenderIp = x.Sender.IpAddress,
                 SenderPort = x.Sender.Port,
             });
@@ -68,7 +70,7 @@ namespace MessageReceiver.Services
         {
             // find or create sender
             var senderEntity = await _dbContext.Senders.FirstOrDefaultAsync(x => x.IpAddress == ipAddress && x.Port == port);
-            if(senderEntity == null)
+            if (senderEntity == null)
             {
                 senderEntity = new SenderEntity()
                 {

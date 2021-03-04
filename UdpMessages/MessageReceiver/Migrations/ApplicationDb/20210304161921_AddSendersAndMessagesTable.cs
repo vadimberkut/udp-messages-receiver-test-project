@@ -2,17 +2,32 @@
 
 namespace MessageReceiver.Migrations.ApplicationDb
 {
-    public partial class AddMessagesTable : Migration
+    public partial class AddSendersAndMessagesTable : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Senders",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    IpAddress = table.Column<string>(type: "TEXT", nullable: true),
+                    Port = table.Column<int>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<long>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Senders", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Messages",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(50)", nullable: false),
                     SenderId = table.Column<string>(type: "nvarchar(50)", nullable: true),
-                    Message = table.Column<string>(type: "TEXT", nullable: true)
+                    Message = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedAt = table.Column<long>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -35,6 +50,9 @@ namespace MessageReceiver.Migrations.ApplicationDb
         {
             migrationBuilder.DropTable(
                 name: "Messages");
+
+            migrationBuilder.DropTable(
+                name: "Senders");
         }
     }
 }

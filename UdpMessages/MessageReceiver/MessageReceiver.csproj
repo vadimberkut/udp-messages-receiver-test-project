@@ -23,4 +23,8 @@
     <ProjectReference Include="..\UdpMessages.Shared\UdpMessages.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\ApplicationDb\" />
+  </ItemGroup>
+
 </Project>

@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UdpMessages.Shared.Config;
+using UdpMessages.Shared.Helpers;
 
 namespace MessageReceiver
 {
@@ -39,8 +40,18 @@ namespace MessageReceiver
             services.Configure<UdpMessageReceiverSettings>(Configuration.GetSection("UdpMessageReceiver"));
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(config.ConnectionStrings.ApplicationDbContext)
-            );
+            {
+                options.UseSqlite(config.ConnectionStrings.ApplicationDbContext);
+
+                // enable detailed log
+                if(HostingEnvironmentHelper.IsDevelopmentAny())
+                {
+                    options.LogTo(Console.WriteLine);
+                    options.EnableSensitiveDataLogging();
+                    options.EnableDetailedErrors();
+                }
+                
+            });
 
             // Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore provides middleware for Entity Framework Core error pages.
             services.AddDatabaseDeveloperPageExceptionFilter();

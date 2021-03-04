@@ -9,6 +9,7 @@ namespace MessageReceiver.Dtos
     {
         public string Id { get; set; }
         public string Message { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
         public string SenderIp { get; set; }
         public int SenderPort { get; set; }
     }

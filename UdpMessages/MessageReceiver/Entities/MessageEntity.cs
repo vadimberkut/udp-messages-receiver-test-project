@@ -10,6 +10,6 @@ namespace MessageReceiver.Entities
         public string SenderId { get; set; }
         public string Message { get; set; }
 
-        public virtual SenderEntity Sender { get; set; }
+        public SenderEntity Sender { get; set; }
     }
 }

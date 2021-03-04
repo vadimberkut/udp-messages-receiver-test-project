@@ -10,8 +10,10 @@ namespace MessageReceiver.Entities
         public BaseEntity()
         {
             Id = Guid.NewGuid().ToString();
+            CreatedAt = DateTimeOffset.UtcNow;
         }
 
         public string Id { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
     }
 }

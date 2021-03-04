@@ -1,5 +1,7 @@
 using MessageReceiver.Contexts;
 using MessageReceiver.HostedServices;
+using MessageReceiver.Services;
+using MessageReceiver.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -43,6 +45,8 @@ namespace MessageReceiver
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddHostedService<UdpMessageReceiverHostedService>();
+
+            services.AddTransient<IMessagesService, MessagesService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

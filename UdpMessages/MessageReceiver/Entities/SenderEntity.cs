@@ -10,6 +10,6 @@ namespace MessageReceiver.Entities
         public string IpAddress { get; set; }
         public int Port { get; set; }
 
-        // public virtual IList<SenderEntity> Messages { get; set; }
+        public List<MessageEntity> Messages { get; set; }
     }
 }

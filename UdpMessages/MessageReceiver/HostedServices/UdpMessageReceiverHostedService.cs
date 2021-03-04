@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using MessageReceiver.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -16,16 +18,19 @@ namespace MessageReceiver.HostedServices
     {
         private readonly ILogger<UdpMessageReceiverHostedService> _logger;
         private readonly UdpMessageReceiverSettings _config;
+        private readonly IServiceProvider _serviceProvider;
         private readonly UdpClient _udpClient;
         private IAsyncResult _asyncResult;
 
         public UdpMessageReceiverHostedService(
             ILogger<UdpMessageReceiverHostedService> logger,
-            IOptions<UdpMessageReceiverSettings> config    
+            IOptions<UdpMessageReceiverSettings> config    ,
+            IServiceProvider serviceProvider
         )
         {
             _logger = logger;
             _config = config.Value;
+            _serviceProvider = serviceProvider;
             _udpClient = new UdpClient(_config.ListenPort);
         }
 
@@ -76,6 +81,17 @@ namespace MessageReceiver.HostedServices
                 byte[] bytes = _udpClient.EndReceive(asyncResult, ref remoteIpEndPoint);
                 string message = Encoding.ASCII.GetString(bytes);
                 _logger.LogInformation($"Received message from {remoteIpEndPoint.Address.ToString()}:{remoteIpEndPoint.Port}: {message}.");
+
+                // save message
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var messagesService = scope.ServiceProvider.GetRequiredService<IMessagesService>();
+                    messagesService.SaveMessageAsync(
+                        remoteIpEndPoint.Address.ToString(),
+                        remoteIpEndPoint.Port,
+                        message
+                    ).GetAwaiter().GetResult();
+                }
 
                 // continue receiving
                 StartListening();

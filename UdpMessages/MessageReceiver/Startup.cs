@@ -1,7 +1,10 @@
+using MessageReceiver.Contexts;
 using MessageReceiver.HostedServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,9 +29,18 @@ namespace MessageReceiver
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var config = Configuration.Get<ApplicationSettings>();
+
             services.AddOptions();
             services.Configure<ApplicationSettings>(Configuration);
             services.Configure<UdpMessageReceiverSettings>(Configuration.GetSection("UdpMessageReceiver"));
+
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlite(config.ConnectionStrings.ApplicationDbContext)
+            );
+
+            // Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore provides middleware for Entity Framework Core error pages.
+            services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddHostedService<UdpMessageReceiverHostedService>();
 

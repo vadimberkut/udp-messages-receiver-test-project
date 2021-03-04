@@ -8,10 +8,16 @@ namespace MessageReceiver
     public class ApplicationSettings
     {
         public UdpMessageReceiverSettings UdpMessageReceiver { get; set; }
+        public ConnectionStringsSettings ConnectionStrings { get; set; }
     }
 
     public class UdpMessageReceiverSettings
     {
         public int ListenPort { get; set; }
+    }
+
+    public class ConnectionStringsSettings
+    {
+        public string ApplicationDbContext { get; set; }
     }
 }

@@ -125,13 +125,13 @@ namespace MessageSender
 
                     // send another message
                     string message = $"Sender {i}. Message {messageIndex}. {faker.Lorem.Sentence(wordCount: 5)}.";
-                    Console.WriteLine($"Sender {i}. Sending message {messageIndex}...");
+                    Console.WriteLine($"Sender {i}. Sending message {messageIndex}. Message: {message}.");
                     byte[] bytes = Encoding.ASCII.GetBytes(message);
                     udpClient.Send(bytes, bytes.Length);
                     messageIndex += 1;
 
                     // wait
-                    await Task.Delay(5000 + i * 1000);
+                    await Task.Delay(10000 + i * 1000);
                 }
             }));
         }

@@ -43,14 +43,13 @@ namespace MessageReceiver
             {
                 options.UseSqlite(config.ConnectionStrings.ApplicationDbContext);
 
-                // enable detailed log
-                if(HostingEnvironmentHelper.IsDevelopmentAny())
-                {
-                    options.LogTo(Console.WriteLine);
-                    options.EnableSensitiveDataLogging();
-                    options.EnableDetailedErrors();
-                }
-                
+                // enable detailed logs
+                //if(HostingEnvironmentHelper.IsDevelopmentAny())
+                //{
+                //    options.LogTo(Console.WriteLine);
+                //    options.EnableSensitiveDataLogging();
+                //    options.EnableDetailedErrors();
+                //}
             });
 
             // Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore provides middleware for Entity Framework Core error pages.
@@ -75,9 +74,20 @@ namespace MessageReceiver
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            // apply migrations automatically
+            using(var scope = app.ApplicationServices.CreateScope())
+            {
+                var applicationDbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                applicationDbContext.Database.Migrate();
+            }
+
+            if (HostingEnvironmentHelper.IsDevelopmentAny())
             {
                 app.UseDeveloperExceptionPage();
+            }
+
+            if (!HostingEnvironmentHelper.IsProductionAny())
+            {
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MessageReceiver v1"));
             }

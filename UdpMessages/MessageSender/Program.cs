@@ -95,15 +95,23 @@ namespace MessageSender
             {
                 // create UDP client with default remote host specified
                 using UdpClient udpClient = new UdpClient();
-                if(!string.IsNullOrEmpty(remoteIp))
+                try
                 {
-                    IPEndPoint remoteIpEndPoint = new IPEndPoint(IPAddress.Parse(remoteIp), remotePort);
-                    udpClient.Connect(remoteIpEndPoint);
+                    if (!string.IsNullOrEmpty(remoteIp))
+                    {
+                        IPEndPoint remoteIpEndPoint = new IPEndPoint(IPAddress.Parse(remoteIp), remotePort);
+                        udpClient.Connect(remoteIpEndPoint);
+                    }
+                    else if (!string.IsNullOrEmpty(remoteHost))
+                    {
+                        udpClient.Connect(remoteHost, remotePort);
+                    }
                 }
-                else if(!string.IsNullOrEmpty(remoteHost))
+                catch(Exception ex)
                 {
-                    udpClient.Connect(remoteHost, remotePort);
+                    Console.WriteLine($"UdpClient connection error: {ex.Message}");
                 }
+               
 
                 int messageIndex = 0;
 

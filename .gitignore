@@ -386,5 +386,7 @@ FinancialPortfolio/Pinstripe.Web/Pinstripe.Web.Admin/wwwroot
 
 # Ignore SQLite db
 UdpMessagesDb.db
+UdpMessagesDb.db-shm
+UdpMessagesDb.db-wal
 
 

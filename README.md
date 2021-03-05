@@ -12,6 +12,21 @@ MessageReceiver - UDP message receiver with HTTP API.
 MessageSender - console app that sends test UDP messages.
 
 
+# Run locally
+
+## Windows
+```bash
+# Receiver
+./cli/run-MessageReceiver-Development.cmd
+
+# Sender
+./cli/run-MessageSender-Development.cmd
+```
+
+Receiver API Swagger
+
+http://localhost:5040/swagger
+
 # Heroku
 
 Urls:

@@ -383,3 +383,8 @@ final-build
 
 # built clients in wwwroot
 FinancialPortfolio/Pinstripe.Web/Pinstripe.Web.Admin/wwwroot
+
+# Ignore SQLite db
+UdpMessagesDb.db
+
+
